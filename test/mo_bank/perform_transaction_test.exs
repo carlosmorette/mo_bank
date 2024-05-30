@@ -72,7 +72,7 @@ defmodule MoBank.PerformTransactionTest do
       account_number = account.account_number
 
       assert {:ok, %{numero_conta: ^account_number, saldo: 0.0}} = Task.await(first_task)
-      assert {:error, %{validate_account: :insufficient_balance}} = Task.await(second_task)
+      assert {:error, :insufficient_balance} = Task.await(second_task)
     end
   end
 end

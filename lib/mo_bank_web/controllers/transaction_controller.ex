@@ -9,17 +9,11 @@ defmodule MoBankWeb.TransactionController do
       {:ok, account_info} ->
         json(conn, account_info)
 
-      {:error, :insufficient_balance} ->
-        bad_request(conn)
-
       {:error, :account_not_found} ->
         not_found(conn)
 
-      {:error, :unknown_error} ->
+      {:error, _some_error} ->
         bad_request(conn)
-
-      {:error, error} ->
-        bad_request(conn, %{error: error})
     end
   end
 end

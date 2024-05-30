@@ -14,7 +14,7 @@ defmodule MoBankWeb.AccountController do
         json(conn, account_info)
 
       {:error, error} ->
-        bad_request(conn, error)
+        bad_request(conn, %{error: error})
     end
   end
 
