@@ -4,6 +4,8 @@ defmodule MoBank.Entities.TransactionType do
 
   alias MoBank.Repo
 
+  @type t :: %__MODULE__{}
+
   schema "transaction_types" do
     field :type, Ecto.Enum, values: [:debit_card, :credit_card, :pix]
     field :percentage_fee, :integer
