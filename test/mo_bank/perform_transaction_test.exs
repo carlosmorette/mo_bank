@@ -55,9 +55,10 @@ defmodule MoBank.PerformTransactionTest do
                })
     end
 
-    test "it should simulate a race condition scenario when 2 request will not complete", %{
-      account: account
-    } do
+    test "it should simulate a race condition scenario where two requests are almost together, but the second one will not debit from the account.",
+         %{
+           account: account
+         } do
       trx_params = %{
         numero_conta: account.account_number,
         forma_pagamento: "P",

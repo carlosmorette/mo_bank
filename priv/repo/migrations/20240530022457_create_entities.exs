@@ -19,6 +19,7 @@ defmodule MoBank.Repo.Migrations.CreateEntities do
     end
 
     create unique_index(:accounts, [:account_number])
+    create constraint(:accounts, :balance_must_be_positive, check: "balance >= 0")
 
     create table(:transactions) do
       add :amount, :integer, null: false
