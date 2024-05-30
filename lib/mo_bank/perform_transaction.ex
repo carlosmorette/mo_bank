@@ -1,4 +1,10 @@
 defmodule MoBank.PerformTransaction do
+  @moduledoc """
+  Operação dentro do sistema responsável por realizar "transações". No sistema, "transação" significa:
+  - Diminuir o saldo da conta participante
+  - Registrar a "movimentação"
+  """
+
   use Params
 
   alias MoBank.{Repo, Formatter, Transactions}
@@ -12,6 +18,23 @@ defmodule MoBank.PerformTransaction do
     })
   )
 
+  @type external_return :: %{
+          numero_conta: String.t(),
+          saldo: float
+        }
+
+  @doc """
+  Função responsável por realizar uma "transação" dentro do sistema. Para isso, é necessário
+  informar:
+  - conta desejada
+  - valor desejado
+  - tipo da operação, seja Pix, cartão de débito ou cartão de crédito
+
+  Tirando a parte de validar os parâmetros, toda a operação acontece dentro de uma "transação" no banco
+  com com "lock pessimista" garantindo que não acontecerá problemas de "race condition" com o saldo da
+  conta participante da transação.
+  """
+  @spec run(map) :: {:ok, external_return} | {:error, atom}
   def run(external_params) do
     with {:ok, params} <- validate_and_format_external_params(external_params) do
       Ecto.Multi.new()
@@ -21,7 +44,7 @@ defmodule MoBank.PerformTransaction do
       )
       |> Ecto.Multi.run(:validate_account, fn
         _repo, %{account: nil} ->
-          {:error, :unknown_account}
+          {:error, :account_not_found}
 
         _repo, %{account: account} ->
           check_has_sufficient_balance(account, params.amount)
@@ -35,24 +58,14 @@ defmodule MoBank.PerformTransaction do
     end
   end
 
-  def format_to_return({:ok, %{decrease_balance: account}}) do
-    {:ok,
-     %{
-       numero_conta: account.account_number,
-       saldo: Formatter.to_float(account.balance)
-     }}
-  end
-
-  def format_to_return({:error, step, error, _state}), do: {:error, %{step => error}}
-
-  def check_has_sufficient_balance(%Account{} = account, transaction_amount)
-      when is_integer(transaction_amount) do
+  defp check_has_sufficient_balance(%Account{} = account, transaction_amount)
+       when is_integer(transaction_amount) do
     if account.balance >= transaction_amount,
       do: {:ok, account},
       else: {:error, :insufficient_balance}
   end
 
-  def validate_and_format_external_params(data) do
+  defp validate_and_format_external_params(data) do
     with %Ecto.Changeset{valid?: true} = changeset <- perform_transaction_params(data),
          base_params <- base_params(changeset),
          {:ok, transaction_type} <- Transactions.find_trx_type(base_params.transaction_type) do
@@ -66,7 +79,7 @@ defmodule MoBank.PerformTransaction do
     end
   end
 
-  def base_params(%Ecto.Changeset{} = changeset) do
+  defp base_params(%Ecto.Changeset{} = changeset) do
     %{
       transaction_type: changeset.changes.forma_pagamento,
       account_number: changeset.changes.numero_conta,
@@ -74,7 +87,7 @@ defmodule MoBank.PerformTransaction do
     }
   end
 
-  def format_transaction_parameters(base_params, trx_type) do
+  defp format_transaction_parameters(base_params, trx_type) do
     fee_calc = Transactions.apply_fee(trx_type, amount: base_params.amount)
 
     %{
@@ -84,4 +97,14 @@ defmodule MoBank.PerformTransaction do
       sender_account_id: to_string(base_params.account_number)
     }
   end
+
+  defp format_to_return({:ok, %{decrease_balance: account}}) do
+    {:ok,
+     %{
+       numero_conta: account.account_number,
+       saldo: Formatter.to_float(account.balance)
+     }}
+  end
+
+  defp format_to_return({:error, _step, error, _state}), do: {:error, error}
 end
