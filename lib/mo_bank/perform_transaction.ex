@@ -2,7 +2,7 @@ defmodule MoBank.PerformTransaction do
   use Params
 
   alias MoBank.{Repo, Formatter, Transactions}
-  alias MoBank.Entities.{Account, TransactionType, Transaction}
+  alias MoBank.Entities.{Account, Transaction}
 
   defparams(
     perform_transaction_params(%{
@@ -55,7 +55,7 @@ defmodule MoBank.PerformTransaction do
   def validate_and_format_external_params(data) do
     with %Ecto.Changeset{valid?: true} = changeset <- perform_transaction_params(data),
          base_params <- base_params(changeset),
-         {:ok, transaction_type} <- find_trx_type(base_params.transaction_type) do
+         {:ok, transaction_type} <- Transactions.find_trx_type(base_params.transaction_type) do
       {:ok, format_transaction_parameters(base_params, transaction_type)}
     else
       %Ecto.Changeset{valid?: false} = changeset ->
@@ -63,16 +63,6 @@ defmodule MoBank.PerformTransaction do
 
       {:error, error} ->
         {:error, error}
-    end
-  end
-
-  def find_trx_type(unparsed_type) do
-    with {:ok, type} <- parse_transaction_type(unparsed_type) do
-      if trx_type = TransactionType.find(type: type) do
-        {:ok, trx_type}
-      else
-        {:error, :transaction_type_not_found}
-      end
     end
   end
 
@@ -94,9 +84,4 @@ defmodule MoBank.PerformTransaction do
       sender_account_id: to_string(base_params.account_number)
     }
   end
-
-  def parse_transaction_type("P"), do: {:ok, :pix}
-  def parse_transaction_type("C"), do: {:ok, :credit_card}
-  def parse_transaction_type("D"), do: {:ok, :debit_card}
-  def parse_transaction_type(_), do: {:error, :unknown_transaction_type}
 end
