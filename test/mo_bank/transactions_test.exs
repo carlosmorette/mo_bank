@@ -1,5 +1,5 @@
 defmodule MoBank.TransactionsTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   import MoBank.Factory
 
   alias MoBank.Transactions
@@ -8,6 +8,8 @@ defmodule MoBank.TransactionsTest do
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(MoBank.Repo)
     Ecto.Adapters.SQL.Sandbox.mode(MoBank.Repo, {:shared, self()})
+
+    :ok
   end
 
   describe "apply_fee/2" do

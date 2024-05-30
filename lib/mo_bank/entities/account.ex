@@ -32,7 +32,7 @@ defmodule MoBank.Entities.Account do
   def query_find_for_update(account_number: account_number) do
     query =
       from a in __MODULE__,
-        where: a.id == ^account_number,
+        where: a.account_number == ^account_number,
         lock: "FOR UPDATE"
   end
 

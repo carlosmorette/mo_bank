@@ -1,11 +1,11 @@
 defmodule MoBank.ManageAccountsTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   alias MoBank.CreateAccount
 
   setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MoBank.Repo)
     Ecto.Adapters.SQL.Sandbox.mode(MoBank.Repo, {:shared, self()})
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MoBank.Repo)
   end
 
   describe "run/1" do
