@@ -1,5 +1,5 @@
 defmodule MoBank.FormatterTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias MoBank.Formatter
 

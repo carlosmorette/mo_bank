@@ -28,7 +28,7 @@ defmodule MoBank.CreateAccount do
 
   def format_to_external(%Account{} = acc) do
     %{
-      numero_da_conta: acc.account_number,
+      numero_conta: acc.account_number,
       saldo: Formatter.to_float(acc.balance)
     }
   end

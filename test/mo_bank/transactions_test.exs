@@ -1,5 +1,5 @@
 defmodule MoBank.TransactionsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   import MoBank.Factory
 
   alias MoBank.Transactions
