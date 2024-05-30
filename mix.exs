@@ -9,7 +9,11 @@ defmodule MoBank.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      preferred_cli_env: [
+        coveralls: :test
+      ],
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -50,7 +54,8 @@ defmodule MoBank.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:params, "~> 2.0"}
+      {:params, "~> 2.0"},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 
