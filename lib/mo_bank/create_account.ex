@@ -1,37 +1,29 @@
 defmodule MoBank.CreateAccount do
-  use Params
   alias MoBank.Entities.Account
   alias MoBank.Formatter
 
-  defparams(
-    create_account_params(%{
-      numero_da_conta!: :integer,
-      saldo!: :float
-    })
-  )
+  def run(external_params) do
+    with {:ok, formatted_params} <- format_to_database(external_params) do
+      case Account.create(formatted_params) do
+        {:ok, %Account{} = account} ->
+          {:ok, format_to_external(account)}
 
-  def run(params) do
-    with {:ok, params} <- validate_and_format_external_params(params),
-         {:ok, %Account{} = account} <- Account.create(params) do
-      {:ok, format_to_external(account)}
+        {:error, %Ecto.Changeset{} = changeset} ->
+          {:error, Ecto.Changeset.traverse_errors(changeset, fn {msg, _otps} -> msg end)}
+      end
     end
   end
 
-  def validate_and_format_external_params(data) do
-    case create_account_params(data) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        {:ok, format_to_database(changeset)}
-
-      changeset ->
-        {:error, Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)}
+  defp format_to_database(data) do
+    if is_float(data[:saldo]) do
+      {:ok,
+       %{
+         account_number: data[:numero_conta],
+         balance: Formatter.to_cents(data[:saldo])
+       }}
+    else
+      {:error, :invalid_balance}
     end
-  end
-
-  def format_to_database(%Ecto.Changeset{} = changeset) do
-    %{
-      id: changeset.changes.numero_da_conta,
-      balance: Formatter.to_cents(changeset.changes.numero_da_conta)
-    }
   end
 
   def format_to_external(%Account{} = acc) do

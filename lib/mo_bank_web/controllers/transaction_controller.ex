@@ -1,6 +1,6 @@
 defmodule MoBankWeb.TransactionController do
   use MoBankWeb, :controller
-  import MoBankWeb.HTTPStatusErrors, only: [bad_request: 1, not_found: 1]
+  import MoBankWeb.HTTPStatusErrors, only: [bad_request: 1, bad_request: 2, not_found: 1]
 
   alias MoBank.PerformTransaction
 
@@ -17,6 +17,9 @@ defmodule MoBankWeb.TransactionController do
 
       {:error, :unknown_error} ->
         bad_request(conn)
+
+      {:error, error} ->
+        bad_request(conn, %{error: error})
     end
   end
 end

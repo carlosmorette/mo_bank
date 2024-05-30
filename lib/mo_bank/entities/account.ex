@@ -6,7 +6,6 @@ defmodule MoBank.Entities.Account do
   alias MoBank.Repo
 
   schema "accounts" do
-    ## TODO: agora vai buscar por account_number
     field :account_number, :string
     field :balance, :integer
 
@@ -15,8 +14,9 @@ defmodule MoBank.Entities.Account do
 
   def create_changeset(account, attrs) do
     account
-    |> cast(attrs, [:balance, :id])
-    |> validate_required([:balance, :id])
+    |> cast(attrs, [:balance, :account_number])
+    |> validate_required([:balance, :account_number])
+    |> unique_constraint(:account_number)
   end
 
   def update_changeset(account, attrs) do
@@ -29,19 +29,15 @@ defmodule MoBank.Entities.Account do
     |> Repo.insert()
   end
 
-  def find_for_update(id: id) do
+  def query_find_for_update(account_number: account_number) do
     query =
       from a in __MODULE__,
-        where: a.id == ^id,
+        where: a.id == ^account_number,
         lock: "FOR UPDATE"
-
-    Repo.one(query)
   end
 
-  def decrease_balance(%__MODULE__{} = account, amount: amount) do
-    account
-    |> update_changeset(%{balance: account.balance - amount})
-    |> Repo.update()
+  def decrease_balance_changeset(%__MODULE__{} = account, amount: amount) do
+    update_changeset(account, %{balance: account.balance - amount})
   end
 
   def find(account_number: account_number) do

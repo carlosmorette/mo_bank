@@ -4,6 +4,11 @@ defmodule MoBankWeb.AccountController do
   alias MoBank.{CreateAccount, FindAccount}
 
   def create(conn, params) do
+    params = %{
+      numero_conta: params["numero_conta"],
+      saldo: params["saldo"]
+    }
+
     case CreateAccount.run(params) do
       {:ok, account_info} ->
         json(conn, account_info)
@@ -13,8 +18,8 @@ defmodule MoBankWeb.AccountController do
     end
   end
 
-  def get(conn, %{"numero_conta" => account_number}) do
-    if account_info = FindAccount.run(account_number: account_number) do
+  def get(conn, _params) do
+    if account_info = FindAccount.run(account_number: conn.query_params["numero_conta"]) do
       json(conn, account_info)
     else
       not_found(conn)

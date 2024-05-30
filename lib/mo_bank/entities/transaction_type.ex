@@ -4,19 +4,19 @@ defmodule MoBank.Entities.TransactionType do
 
   alias MoBank.Repo
 
-  schema "transaction_type" do
+  schema "transaction_types" do
     field :type, Ecto.Enum, values: [:debit_card, :credit_card, :pix]
     field :percentage_fee, :integer
 
     timestamps()
   end
 
-  def changeset(tran_type, attrs) do
-    tran_type
-    |> cast(attrs, [:type, :fee])
+  def find(type: type) do
+    Repo.get_by(__MODULE__, type: type)
   end
 
-  def get(transaction_type: transaction_type) do
-    Repo.get_by(__MODULE__, transaction_type: transaction_type)
+  ## used only by admins
+  def create(type: type, percentage_fee: percentage_fee) do
+    Repo.insert(%__MODULE__{type: type, percentage_fee: percentage_fee})
   end
 end
