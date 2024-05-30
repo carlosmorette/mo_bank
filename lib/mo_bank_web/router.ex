@@ -24,6 +24,7 @@ defmodule MoBankWeb.Router do
     pipe_through :api
 
     post "/conta", AccountController, :create
+    get "/conta/:numero_conta", AccountController, :get
     post "/transacao", TransactionController, :create
   end
 

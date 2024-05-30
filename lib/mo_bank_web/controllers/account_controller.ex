@@ -1,17 +1,23 @@
 defmodule MoBankWeb.AccountController do
   use MoBankWeb, :controller
-  alias MoBank.ManageAccounts
+  import MoBankWeb.HTTPStatusErrors, only: [bad_request: 2, not_found: 1]
+  alias MoBank.{CreateAccount, FindAccount}
 
   def create(conn, params) do
-    case ManageAccounts.create(params) do
-      {:ok, account_data} ->
-	json(conn, %{numero_da_conta: account_data.id, saldo: account_data.balance})
+    case CreateAccount.run(params) do
+      {:ok, account_info} ->
+        json(conn, account_info)
 
       {:error, error} ->
-	conn
-	|> put_status(:bad_request)
-	|> json(error)
-	|> halt()
+        bad_request(conn, error)
+    end
+  end
+
+  def get(conn, %{"numero_conta" => account_number}) do
+    if account_info = FindAccount.run(account_number: account_number) do
+      json(conn, account_info)
+    else
+      not_found(conn)
     end
   end
 end
