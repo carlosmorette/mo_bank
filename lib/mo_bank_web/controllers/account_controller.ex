@@ -11,7 +11,9 @@ defmodule MoBankWeb.AccountController do
 
     case CreateAccount.run(params) do
       {:ok, account_info} ->
-        json(conn, account_info)
+        conn
+        |> put_status(:ok)
+        |> json(account_info)
 
       {:error, error} ->
         bad_request(conn, %{error: error})
@@ -20,7 +22,9 @@ defmodule MoBankWeb.AccountController do
 
   def get(conn, _params) do
     if account_info = FindAccount.run(account_number: conn.query_params["numero_conta"]) do
-      json(conn, account_info)
+      conn
+      |> put_status(:ok)
+      |> json(account_info)
     else
       not_found(conn)
     end

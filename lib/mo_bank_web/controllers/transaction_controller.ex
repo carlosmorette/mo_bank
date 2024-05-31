@@ -7,7 +7,9 @@ defmodule MoBankWeb.TransactionController do
   def create(conn, params) do
     case PerformTransaction.run(params) do
       {:ok, account_info} ->
-        json(conn, account_info)
+        conn
+        |> put_status(:ok)
+        |> json(account_info)
 
       {:error, :account_not_found} ->
         not_found(conn)
