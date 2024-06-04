@@ -40,7 +40,7 @@ defmodule MoBank.PerformTransaction do
       Ecto.Multi.new()
       |> Ecto.Multi.one(
         :account,
-        Account.query_find_for_update(account_number: params.sender_account_id)
+        Account.query_for_update(account_number: params.sender_account_id)
       )
       |> Ecto.Multi.run(:validate_account, fn
         _repo, %{account: nil} ->

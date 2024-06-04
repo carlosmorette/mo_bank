@@ -29,11 +29,10 @@ defmodule MoBank.Entities.Account do
     |> Repo.insert()
   end
 
-  def query_find_for_update(account_number: account_number) do
-    query =
-      from a in __MODULE__,
-        where: a.account_number == ^account_number,
-        lock: "FOR UPDATE"
+  def query_for_update(account_number: account_number) do
+    from a in __MODULE__,
+      where: a.account_number == ^account_number,
+      lock: "FOR UPDATE"
   end
 
   def decrease_balance_changeset(%__MODULE__{} = account, amount: amount) do
