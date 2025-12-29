@@ -23,6 +23,9 @@ COPY config ./config
 COPY lib ./lib
 COPY rel ./rel
 
+COPY priv ./priv
+COPY assets ./assets
+
 # Build release
 RUN mix release
 

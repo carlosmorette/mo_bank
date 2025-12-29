@@ -28,6 +28,13 @@ defmodule MoBankWeb.Router do
     post "/transacao", TransactionController, :create
   end
 
+  scope "/api/health", MoBankWeb do
+    pipe_through :api
+
+    get "/health", ProbeController, :health
+    get "/ready", ProbeController, :ready
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", MoBankWeb do
   #   pipe_through :api
