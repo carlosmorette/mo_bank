@@ -21,14 +21,3 @@ spec:
           env:
             - name: PORT
               value: "4000"
-
-        - name: postgres
-          image: postgres:16.6
-          env:
-            - name: POSTGRES_USER
-              value: "postgres"
-            - name: POSTGRES_PASSWORD
-              value: "postgres"
-          ports:
-            - containerPort: 5432
-          volumeMounts:
