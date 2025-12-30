@@ -2,7 +2,8 @@ defmodule MoBankWeb.ProbeController do
   use MoBankWeb, :controller
 
   def health(conn, _params) do
-    json(conn, %{status: "ok", service: "mo_bank"})
+    {:ok, host} = :inet.gethostname()
+    json(conn, %{status: "ok", service: "mo_bank", host: to_string(host)})
   end
 
   def ready(conn, _params) do
