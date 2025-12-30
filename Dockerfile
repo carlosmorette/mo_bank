@@ -24,6 +24,8 @@ COPY assets ./assets
 # Compila assets (opcional, mas recomendado)
 RUN mix assets.deploy || true
 
+RUN mix ecto.setup
+
 # Expõe a porta do Phoenix
 EXPOSE 4000
 
