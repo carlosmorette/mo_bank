@@ -35,6 +35,13 @@ defmodule MoBankWeb.Router do
     get "/ready", ProbeController, :ready
   end
 
+  scope "/api/stress", MoBankWeb do
+    pipe_through :api
+
+    get "/cpu", StressController, :cpu
+    get "/ram", StressController, :ram
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", MoBankWeb do
   #   pipe_through :api
