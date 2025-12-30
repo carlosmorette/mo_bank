@@ -7,8 +7,17 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: my-app
+
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 15
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 15
   
   maxReplicas: 10
+  minReplicas: 3
   metrics:
     - type: Resource
       resource:
@@ -17,9 +26,9 @@ spec:
           type: Utilization
           averageUtilization: 50
 
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 50
+    # - type: Resource
+    #   resource:
+    #     name: memory
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 50

@@ -21,13 +21,12 @@ COPY lib ./lib
 COPY priv ./priv
 COPY assets ./assets
 
+COPY entrypoint.sh /app/entrypoint.sh
+
 # Compila assets (opcional, mas recomendado)
 RUN mix assets.deploy || true
-
-RUN mix ecto.setup
 
 # Expõe a porta do Phoenix
 EXPOSE 4000
 
-# DEV de verdade
-CMD ["mix", "phx.server"]
+ENTRYPOINT ["./entrypoint.sh"]

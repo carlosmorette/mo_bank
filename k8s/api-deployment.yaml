@@ -33,3 +33,11 @@ spec:
               port: 4000
             initialDelaySeconds: 5
             periodSeconds: 5
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
