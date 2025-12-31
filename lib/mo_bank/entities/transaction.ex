@@ -1,8 +1,13 @@
 defmodule MoBank.Entities.Transaction do
+  @moduledoc """
+  Módulo que define o schema e as operações relacionadas a transações financeiras.
+
+  Este módulo representa as transações financeiras realizadas no sistema,
+  incluindo informações como valor, taxas, status e contas envolvidas.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias MoBank.Repo
   alias MoBank.Entities.{Account, TransactionType}
 
   @fields ~w(amount fee_in_cents status sender_account_id payment_type_id)a

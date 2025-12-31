@@ -1,4 +1,10 @@
 defmodule MoBank.Entities.Account do
+  @moduledoc """
+  Módulo que define o schema e as operações relacionadas a contas bancárias.
+
+  Este módulo representa as contas dos usuários do sistema, contendo informações
+  como número da conta e saldo disponível.
+  """
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query

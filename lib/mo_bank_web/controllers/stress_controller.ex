@@ -1,7 +1,7 @@
 defmodule MoBankWeb.StressController do
   use MoBankWeb, :controller
 
-   def cpu(conn, params) do
+  def cpu(conn, params) do
     factor = String.to_integer(params["factor"] || "1")
 
     Enum.each(1..factor, fn _ ->

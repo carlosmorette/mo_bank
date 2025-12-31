@@ -7,8 +7,8 @@ defmodule MoBank.PerformTransaction do
 
   use Params
 
-  alias MoBank.{Repo, Formatter, Transactions}
   alias MoBank.Entities.{Account, Transaction}
+  alias MoBank.{Formatter, Repo, Transactions}
 
   defparams(
     perform_transaction_params(%{

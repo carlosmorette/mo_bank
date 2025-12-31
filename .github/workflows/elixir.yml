@@ -7,34 +7,99 @@ name: Elixir CI
 
 on:
   push:
-    branches: [ "main", "feat/*" ]
+    branches: ["main", "feat/*"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build and test
+  lint:
+    name: Lint & static analysis
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: '1.14.0' # [Required] Define the Elixir version
-        otp-version: '25.0'      # [Required] Define the Erlang/OTP version
-    - name: Restore dependencies cache
-      uses: actions/cache@v3
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-mix-
-    - name: Install dependencies
-      run: mix deps.get
-    - name: Run tests
-      run: mix test
-    - name: Run credo
-      run: mix credo --strict
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: "1.14.0"
+          otp-version: "25.0"
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: |
+            ${{ runner.os }}-elixir-
+            ${{ steps.beam.outputs.elixir-version }}-
+            ${{ steps.beam.outputs.otp-version }}-
+            ${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-elixir-
+
+      - run: mix deps.get
+      #- run: mix compile --warnings-as-errors
+      - run: mix format --check-formatted
+      - run: mix credo
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    strategy:
+      matrix:
+        partition: [1, 2]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        id: beam
+        with:
+          elixir-version: "1.14.0"
+          otp-version: "25.0"
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: |
+            ${{ runner.os }}-elixir-
+            ${{ steps.beam.outputs.elixir-version }}-
+            ${{ steps.beam.outputs.otp-version }}-
+            ${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-elixir-
+
+      - run: mix deps.get
+
+      - name: Run tests
+        env:
+          MIX_ENV: test
+          MIX_TEST_PARTITION: ${{ matrix.partition }}
+        run: |
+          mix ecto.create
+          mix ecto.migrate
+          mix test

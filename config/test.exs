@@ -9,7 +9,7 @@ config :mo_bank, MoBank.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "mo_bank_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "mo_bank_test",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 

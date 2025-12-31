@@ -1,6 +1,11 @@
 defmodule MoBank.Entities.TransactionType do
+  @moduledoc """
+  Módulo que define o schema e as operações relacionadas aos tipos de transação.
+
+  Este módulo representa os diferentes tipos de transações suportadas pelo sistema,
+  como cartão de crédito, cartão de débito e PIX, juntamente com suas respectivas taxas.
+  """
   use Ecto.Schema
-  import Ecto.Changeset
 
   alias MoBank.Repo
 

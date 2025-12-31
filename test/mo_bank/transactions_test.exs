@@ -2,12 +2,15 @@ defmodule MoBank.TransactionsTest do
   use ExUnit.Case
   import MoBank.Factory
 
+  alias Ecto.Adapters.SQL.Sandbox
+
   alias MoBank.Transactions
   alias MoBank.Entities.TransactionType
+  alias MoBank.Repo
 
   setup do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MoBank.Repo)
-    Ecto.Adapters.SQL.Sandbox.mode(MoBank.Repo, {:shared, self()})
+    :ok = Sandbox.checkout(Repo)
+    Sandbox.mode(Repo, {:shared, self()})
 
     :ok
   end
@@ -33,7 +36,7 @@ defmodule MoBank.TransactionsTest do
     test "it should apply 5% fee on transaction amount for Debit card transaction" do
       trx_type = insert(:transaction_type, %{type: :credit_card, percentage_fee: 5})
 
-      assert %{amount_with_fee: 210_00, fee_in_cents: 10_00} =
+      assert %{amount_with_fee: 21_000, fee_in_cents: 10_00} =
                Transactions.apply_fee(trx_type, amount: 200.00)
 
       assert %{amount_with_fee: 1050, fee_in_cents: 50} =

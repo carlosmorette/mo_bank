@@ -1,4 +1,10 @@
 defmodule MoBank.Formatter do
+  @moduledoc """
+  Módulo responsável por formatar valores monetários.
+
+  Fornece funções para conversão entre diferentes formatos de valores monetários,
+  como conversão entre reais e centavos.
+  """
   @doc "Função para converter um valor `float` em `integer`."
   @spec to_cents(float) :: integer
   def to_cents(value) when is_float(value) do

@@ -1,4 +1,10 @@
 defmodule MoBankWeb.HTTPStatusErrors do
+  @moduledoc """
+  Módulo responsável por padronizar as respostas de erro HTTP da API.
+
+  Fornece funções auxiliares para retornar respostas de erro comuns
+  como bad_request (400) e not_found (404) de forma consistente.
+  """
   import Plug.Conn, only: [put_status: 2, halt: 1]
   import Phoenix.Controller, only: [json: 2]
 
