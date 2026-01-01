@@ -1,0 +1,35 @@
+name: Deploy 
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        type: choice
+        options:
+          - prd
+          - dev
+
+env:
+  MAINTENANCER: ${{ vars.MAINTENANCER }}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Elixir Dummy Deploy
+    runs-on: ubuntu-latest
+    environment: SUPER_SECRET_PRD
+    steps:
+      - name: Deploy STG
+        if: inputs.environment == 'dev'
+        run: |
+          echo "Deploying... with ${{ secrets.MY_SUPER_SECRET }} to ${{ inputs.environment }} and $MAINTENANCER"
+
+      - name: Deploy PRD
+        if: inputs.environment == 'prd'
+        run: |
+          echo "Deploying... with ${{ secrets.MY_SUPER_SECRET }} to ${{ inputs.environment }} and $MAINTENANCER"
+
